@@ -1,11 +1,37 @@
 #!/usr/bin/env python3
 
 # import the modules you need here
-import argparse
+	import argparse
+    import pandas as pd
+	import datetime
+	import numpy as np
 
 def read_tidal_data(filename):
+    
+    """Reads in a file and removes unnecessary whitespace, rows and missing values to correctly format the file data for analysis."""
+    
+    #Defines new column names
+    column_names = ['Index', 'Date', 'Time', 'Sea Level', 'Residual']
+    
+    #Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
+    dataframe = pd.read_csv(filename, sep = r'\s+', header = column_names, skiprows = 11)
+    
+    #Combines dates and times into datetime
+    date_time = dataframe['Date'] + ' ' + dataframe['Time']
+    dataframe['date_time'] = pd.to_datetime(dataframe['data_time'])
+    
+    #Assigns datetime as the index for thhe data frame
+    dataframe = dataframe.set_index('date_time')
 
-    return 5
+    #Cleans data by replacing missing/corrupted data with NaN values - From SEPwC Git README
+    dataframe.replace(to_replace=".*M$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    dataframe.replace(to_replace=".*N$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    dataframe.replace(to_replace=".*T$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    
+    #Converts sea level data into float
+    dataframe['Sea Level'] = dataframe['Sea Level'].astype(float)
+    
+    return dataframe
     
 def extract_single_year_remove_mean(year, data):
    
