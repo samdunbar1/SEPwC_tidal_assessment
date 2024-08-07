@@ -5,7 +5,7 @@ import argparse
 
 def read_tidal_data(filename):
 
-    return 0
+    return 5
     
 def extract_single_year_remove_mean(year, data):
    
