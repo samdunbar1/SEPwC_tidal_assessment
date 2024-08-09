@@ -8,7 +8,14 @@ import numpy as np
 
 def read_tidal_data(filename):
     
-    """Reads in a file and removes unnecessary whitespace, rows and missing values to correctly format the file data for analysis."""
+    """Reads in a file and removes unnecessary whitespace, rows and missing values to correctly format the file data for analysis.
+    
+    Args:
+    filename: the data file containing tidal data
+    
+    Returns: dataframe containing cleaned sea level data with datetime index
+    
+    """
     
     #Defines new column names
     column_names = ['Index', 'Date', 'Time', 'Sea Level', 'Residual']
@@ -36,12 +43,24 @@ def read_tidal_data(filename):
    
 def extract_single_year_remove_mean(year, data):
     
+    """
+    Extracts a single year of data from the data frame and removes the mean from the sea level data
+    
+    Args:
+    year: the year to be extracted from the data
+    data: 
+        
+    Returns:
+    single_year_data: 
+    
+    """
+    
     #Create strings to define the start and end of a given year
     year_start = str(year) + "01-01"
     year_end = str(year) + "12-31"
     
     #Find the sea level data for a given year in the dataframe
-    single_year_data = dataframe.loc[year_start:year_end, ['Sea Level']]
+    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
     
     #Calculate the mean of the selected year
     single_year_mean = np.mean(single_year_data['Sea Level'])
@@ -54,8 +73,32 @@ def extract_single_year_remove_mean(year, data):
 
 def extract_section_remove_mean(start, end, data):
 
-
-    return 
+    """
+    Extracts a specified year from the dataframe and removes the mean from the data
+    
+    Args:
+    start: start date for the section
+    end: end date for the data
+    data:
+        
+    Returns:
+    single_section_data: 
+    """
+    
+    #Defines the section of data to be read in
+    section_start = str(start)
+    section_end = str(end)
+    
+    #Identifies and extracts the specified section of data from the dataframe
+    section_data = data.loc[section_start:section_end]
+    
+    #Calculate mean sea level for the extracted section
+    section_mean = np.mean(section_data['Sea Level'])
+    
+    #Subtract the mean from the sea level data for the section
+    section_data['Sea Level'] = section_data['Sea Level'] - section_mean
+    
+    return section_data
 
 
 def join_data(data1, data2):
