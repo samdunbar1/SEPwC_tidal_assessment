@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 # import the modules you need here
-	import argparse
-    import pandas as pd
-	import datetime
-	import numpy as np
+import argparse
+import pandas as pd
+import datetime
+import numpy as np
 
 def read_tidal_data(filename):
     
@@ -32,11 +32,24 @@ def read_tidal_data(filename):
     dataframe['Sea Level'] = dataframe['Sea Level'].astype(float)
     
     return dataframe
-    
-def extract_single_year_remove_mean(year, data):
    
-
-    return 
+   
+def extract_single_year_remove_mean(year, data):
+    
+    #Create strings to define the start and end of a given year
+    year_start = str(year) + "01-01"
+    year_end = str(year) + "12-31"
+    
+    #Find the sea level data for a given year in the dataframe
+    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
+    
+    #Calculate the mean of the selected year
+    single_year_mean = np.mean(single_year_data['Sea Level'])
+    
+    #Subtract the mean sea level from the sea level data for the year
+    single_year_data['Sea Level'] = single_year_data['Sea Level'] - single_year_mean
+    
+    return single_year_data
 
 
 def extract_section_remove_mean(start, end, data):
