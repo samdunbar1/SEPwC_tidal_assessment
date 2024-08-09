@@ -41,7 +41,7 @@ def extract_single_year_remove_mean(year, data):
     year_end = str(year) + "12-31"
     
     #Find the sea level data for a given year in the dataframe
-    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
+    single_year_data = dataframe.loc[year_start:year_end, ['Sea Level']]
     
     #Calculate the mean of the selected year
     single_year_mean = np.mean(single_year_data['Sea Level'])
