@@ -138,7 +138,7 @@ def sea_level_rise(data):
     
     """
     Reads in sea level files and calculates sea level rise using linear regression
-
+	
 	Args:
     	data: tidal data
     	
@@ -157,13 +157,13 @@ def sea_level_rise(data):
 #Converts datetime into number of days since start
 	x_data = dates.date2num(data.index)
 	y_data = data["Sea Level"]
-
+	
 #Performs linear regression
 	slope, intercept, r, p, se = linregress(x_data, y_data)
     
     return slope, p
-
-
+    
+    
 def tidal_analysis(data, constituents, start_datetime):
 
 	"""
