@@ -121,14 +121,17 @@ def join_data(data1, data2):
     	joined_data: Sorted file containing the data from the two input files
     
     """
+    #Reads in the two data files
+	data1 = pd.read_csv(data1)
+	data2 = pd.read_csv(data2)
 
-    #Concatenates the two data files into one single file
-    joined_data = pd.concat([data1, data2])
+	#Concatenates the two data files into one single file
+	joined_data = pd.concat([data1, data2])
 
-    #Sorts the joined data by the index in ascending order
-    joined_data.sort_index(ascending=True, inplace=True)
+	#Sorts the joined data by the index in ascending order
+	joined_data.sort_index(ascending=True, inplace=True)
     
-    return joined_data
+	return joined_data
 
 
 def sea_level_rise(data):
@@ -145,18 +148,18 @@ def sea_level_rise(data):
     """
     
     #Drops NaN values from the data
-    data = data.dropna(subset = ["Sea Level"])
+	data = data.dropna(subset = ["Sea Level"])
     
     #Converts the index into datetime
-    data.index = pd.to_datetime(data.index)
+	data.index = pd.to_datetime(data.index)
     
     #Assigns data to x and y axis for regression
     #Converts datetime into number of days since start
-    x_data = dates.date2num(data.index)
-    y_data = data["Sea Level"]
+	x_data = dates.date2num(data.index)
+	y_data = data["Sea Level"]
 
     #Performs linear regression
-    slope, intercept, r, p, se = linregress(x_data, y_data)
+	slope, intercept, r, p, se = linregress(x_data, y_data)
     
     return slope, p
 
@@ -179,11 +182,11 @@ def tidal_analysis(data, constituents, start_datetime):
     
     #Drops unwanted values from Sea Level data
     #Creates tide object for constituents
-    data = data.dropna(subset=["Sea Level"])
-    tide = uptide.Tides(constituents)
+	data = data.dropna(subset=["Sea Level"])
+	tide = uptide.Tides(constituents)
     
     #Sets the initial time and ensures timezone is correct
-    tide.set_initial_time(start_datetime)
+	tide.set_initial_time(start_datetime)
     data.index = data.index.tz_localize(None)
 
     #Converts index into seconds since start of data
