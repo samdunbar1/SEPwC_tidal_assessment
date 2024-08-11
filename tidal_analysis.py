@@ -48,7 +48,7 @@ def extract_single_year_remove_mean(year, data):
     
     Args:
     year: the year to be extracted from the data
-    data: 
+    data: path to data file
         
     Returns:
     single_year_data: 
@@ -79,10 +79,11 @@ def extract_section_remove_mean(start, end, data):
     Args:
     start: start date for the section
     end: end date for the data
-    data:
+    data: path to data file
         
     Returns:
     single_section_data: 
+    
     """
     
     #Defines the section of data to be read in
@@ -103,8 +104,29 @@ def extract_section_remove_mean(start, end, data):
 
 def join_data(data1, data2):
 
-    return 
+	"""
+    Joins two data files into one combined file and sorts them based on their index.
+    
+    Args:
+    data1: First data file to be joined
+    data2: Second data file to be joined
+        
+    Returns:
+    joined_data: Sorted file containing the data from the two input files
+    
+    """
+    
+    #Reads in the two data files
+    data1 = pd.read_csv(data1)
+    data2 = pd.read_csv(data2)
 
+    #Concatenates the two data files into one single file
+    joined_data = pd.concat([data1, data2])
+
+    #Sorts the joined data by the index in ascending order
+    joined_data.sort_index(ascending=True, inplace=True)
+    
+    return joined_data
 
 
 def sea_level_rise(data):
