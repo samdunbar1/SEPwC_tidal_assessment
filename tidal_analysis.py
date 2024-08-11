@@ -19,7 +19,7 @@ def read_tidal_data(filename):
     	filename: the data file containing tidal data
     
     Returns: 
-    	dataframe: dataframe containing cleaned sea level data with datetime index
+    	data: dataframe containing cleaned sea level data with datetime index
     
     """
     
@@ -27,24 +27,24 @@ def read_tidal_data(filename):
     column_names = ['Index', 'Date', 'Time', 'Sea Level', 'Residual']
     
     #Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
-    dataframe = pd.read_csv(filename, sep = r'\s+', header = column_names, skiprows = 11)
+    data = pd.read_csv(filename, sep = r'\s+', header = column_names, skiprows = 11)
     
     #Combines dates and times into datetime
-    date_time = dataframe['Date'] + ' ' + dataframe['Time']
-    dataframe['date_time'] = pd.to_datetime(dataframe['data_time'])
+    date_time = data['Date'] + ' ' + data['Time']
+    data['date_time'] = pd.to_datetime(data['data_time'])
     
     #Assigns datetime as the index for thhe data frame
-    dataframe = dataframe.set_index('date_time')
+    data = data.set_index('date_time')
 
     #Cleans data by replacing missing/corrupted data with NaN values - From SEPwC Git README
-    dataframe.replace(to_replace=".*M$",value={'Sea Level':np.nan},regex=True,inplace=True)
-    dataframe.replace(to_replace=".*N$",value={'Sea Level':np.nan},regex=True,inplace=True)
-    dataframe.replace(to_replace=".*T$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    data.replace(to_replace=".*M$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    data.replace(to_replace=".*N$",value={'Sea Level':np.nan},regex=True,inplace=True)
+    data.replace(to_replace=".*T$",value={'Sea Level':np.nan},regex=True,inplace=True)
     
     #Converts sea level data into float
-    dataframe['Sea Level'] = dataframe['Sea Level'].astype(float)
+    data['Sea Level'] = data['Sea Level'].astype(float)
     
-    return dataframe
+    return data
    
    
 def extract_single_year_remove_mean(year, data):
@@ -201,15 +201,36 @@ def tidal_analysis(data, constituents, start_datetime):
 
 def get_longest_contiguous_data(data):
 
+	"""
+    Finds the longest stretch of sea level data without encountering any NaN values
+    
+    Args:
+        data: Tidal data
+    
+    Returns: 
+        longest stretch of data without NaN values
+        
+    """
+    
+    #https://www.youtube.com/watch?v=7Z7x8zleA0w
+    data = np.append(np.nan, np.append(data, np.nan))
+    
+    #Locate NaN values in data
+    where_null = np.where(np.isnan(data))[0]
 
-    return 
+    #Finds the length of stretches and where the longest is
+    longest_contiguous = np.diff(where_null).argmax()
+    
+    #Returns the position of the boundary NaN values
+    return where_null[[longest_contiguous, longest_contiguous + 1]]
+    
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
                      prog="UK Tidal analysis",
                      description="Calculate tidal constiuents and RSL from tide gauge data",
-                     epilog="Copyright 2024, Jon Hill"
+                     epilog="Copyright 2024, Sam Dunbar"
                      )
 
     parser.add_argument("directory",
