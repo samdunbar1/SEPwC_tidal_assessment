@@ -150,7 +150,7 @@ def sea_level_rise(data):
     #Drops NaN values from the data
 	data = data.dropna(subset = ["Sea Level"])
     
-    #Converts the index into datetime
+	#Converts the index into datetime
 	data.index = pd.to_datetime(data.index)
     
     #Assigns data to x and y axis for regression
@@ -187,13 +187,13 @@ def tidal_analysis(data, constituents, start_datetime):
     
     #Sets the initial time and ensures timezone is correct
 	tide.set_initial_time(start_datetime)
-    data.index = data.index.tz_localize(None)
+	data.index = data.index.tz_localize(None)
 
     #Converts index into seconds since start of data
-    seconds = (data.index - start_datetime).total_second().to_numpy()
+	seconds = (data.index - start_datetime).total_second().to_numpy()
     
     #Conducts harmonic analysis
-    amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"] , seconds)
+	amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"] , seconds)
     
     return amp, pha
 
@@ -212,13 +212,13 @@ def get_longest_contiguous_data(data):
     """
     
     #https://www.youtube.com/watch?v=7Z7x8zleA0w
-    data = np.append(np.nan, np.append(data, np.nan))
+	data = np.append(np.nan, np.append(data, np.nan))
     
     #Locate NaN values in data
-    where_null = np.where(np.isnan(data))[0]
+	where_null = np.where(np.isnan(data))[0]
 
     #Finds the length of stretches and where the longest is
-    longest_contiguous = np.diff(where_null).argmax()
+	longest_contiguous = np.diff(where_null).argmax()
     
     #Returns the position of the boundary NaN values
     return where_null[[longest_contiguous, longest_contiguous + 1]]
