@@ -121,10 +121,6 @@ def join_data(data1, data2):
     	joined_data: Sorted file containing the data from the two input files
     
     """
-    
-    #Reads in the two data files
-    data1 = pd.read_csv(data1)
-    data2 = pd.read_csv(data2)
 
     #Concatenates the two data files into one single file
     joined_data = pd.concat([data1, data2])
