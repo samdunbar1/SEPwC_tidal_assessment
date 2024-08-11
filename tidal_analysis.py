@@ -5,6 +5,8 @@ import argparse
 import pandas as pd
 import datetime
 import numpy as np
+from matplotlib import dates
+from scipy.stats import linregress
 
 def read_tidal_data(filename):
     
@@ -56,8 +58,8 @@ def extract_single_year_remove_mean(year, data):
     """
     
     #Create strings to define the start and end of a given year
-    year_start = str(year) + "01-01"
-    year_end = str(year) + "12-31"
+    year_start = str(year) + "0101"
+    year_end = str(year) + "1231"
     
     #Find the sea level data for a given year in the dataframe
     single_year_data = data.loc[year_start:year_end, ['Sea Level']]
@@ -130,9 +132,28 @@ def join_data(data1, data2):
 
 
 def sea_level_rise(data):
+    
+    """
+    Reads in sea level files and calculates sea level rise using linear regression
 
-                                                     
-    return 
+    """
+    
+    #Drops NaN values from the data
+    data = data.dropna(subset = ["Sea Level"])
+    
+    #Converts the index into datetime
+    data.index = pd.to_datetime(data.index)
+    
+    #Assigns data to x and y axis for regression
+    #Converts datetime into number of days since start
+    x_data = dates.date2num(data.index)
+    y_data = data["Sea Level"]
+
+    #Performs linear regression
+    slope, intercept, r, p, se = linregress(x_data, y_data)
+    
+    return slope, p
+
 
 def tidal_analysis(data, constituents, start_datetime):
 
