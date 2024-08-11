@@ -145,8 +145,8 @@ def sea_level_rise(data):
     Returns:
     	slope: Sea level rise gradient
     	p: p-value
-    """
-    
+	"""
+	
 #Drops NaN values from the data
 	data = data.dropna(subset=["Sea Level"])
 	
