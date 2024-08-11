@@ -148,8 +148,8 @@ def sea_level_rise(data):
     """
     
 #Drops NaN values from the data
-	data = data.dropna(subset = ["Sea Level"])
-    
+	data = data.dropna(subset=["Sea Level"])
+
 #Converts the index into datetime
 	data.index = pd.to_datetime(data.index)
     
