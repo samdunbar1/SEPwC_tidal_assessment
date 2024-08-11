@@ -149,7 +149,7 @@ def sea_level_rise(data):
     
 #Drops NaN values from the data
 	data = data.dropna(subset=["Sea Level"])
-
+	
 #Converts the index into datetime
 	data.index = pd.to_datetime(data.index)
     
@@ -157,7 +157,7 @@ def sea_level_rise(data):
 #Converts datetime into number of days since start
 	x_data = dates.date2num(data.index)
 	y_data = data["Sea Level"]
-	
+
 #Performs linear regression
 	slope, intercept, r, p, se = linregress(x_data, y_data)
     
