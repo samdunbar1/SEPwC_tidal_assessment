@@ -7,15 +7,19 @@ import datetime
 import numpy as np
 from matplotlib import dates
 from scipy.stats import linregress
+import uptide
+import pytz
 
 def read_tidal_data(filename):
     
-    """Reads in a file and removes unnecessary whitespace, rows and missing values to correctly format the file data for analysis.
+    """
+    Reads in file and removes unnecessary whitespace, rows and missing values to correctly format the file data for analysis
     
     Args:
-    filename: the data file containing tidal data
+    	filename: the data file containing tidal data
     
-    Returns: dataframe containing cleaned sea level data with datetime index
+    Returns: 
+    	dataframe: dataframe containing cleaned sea level data with datetime index
     
     """
     
@@ -49,11 +53,11 @@ def extract_single_year_remove_mean(year, data):
     Extracts a single year of data from the data frame and removes the mean from the sea level data
     
     Args:
-    year: the year to be extracted from the data
-    data: path to data file
+    	year: the year to be extracted from the data
+    	data: tidal data
         
     Returns:
-    single_year_data: 
+    	single_year_data: data for the extracted year with mean removed
     
     """
     
@@ -79,12 +83,12 @@ def extract_section_remove_mean(start, end, data):
     Extracts a specified year from the dataframe and removes the mean from the data
     
     Args:
-    start: start date for the section
-    end: end date for the data
-    data: path to data file
+    	start: start date for the section
+    	end: end date for the data
+    	data: path to data file
         
     Returns:
-    single_section_data: 
+    	single_section_data: 
     
     """
     
@@ -110,11 +114,11 @@ def join_data(data1, data2):
     Joins two data files into one combined file and sorts them based on their index.
     
     Args:
-    data1: First data file to be joined
-    data2: Second data file to be joined
+    	data1: First data file to be joined
+    	data2: Second data file to be joined
         
     Returns:
-    joined_data: Sorted file containing the data from the two input files
+    	joined_data: Sorted file containing the data from the two input files
     
     """
     
@@ -136,6 +140,12 @@ def sea_level_rise(data):
     """
     Reads in sea level files and calculates sea level rise using linear regression
 
+	Args:
+    	data: tidal data
+    	
+    Returns:
+    	slope: Sea level rise gradient
+    	p: p-value
     """
     
     #Drops NaN values from the data
@@ -157,8 +167,37 @@ def sea_level_rise(data):
 
 def tidal_analysis(data, constituents, start_datetime):
 
+	"""
+    Performs harmonic analysis of tidal data using from constituents of amplitude and time periods
+    
+    Args:
+    	data: tidal data
+    	constituents: tidal constituents to analyse
+    	start_datetime: start date to contuct analysis from
+        
+    Returns:
+    	amp: amplitude of tidal constituents
+    	pha: phase (time period) of constituents
+    
+    """
+    
+    #Drops unwanted values from Sea Level data
+    #Creates tide object for constituents
+    data = data.dropna(subset=["Sea Level"])
+    tide = uptide.Tides(constituents)
+    
+    #Sets the initial time and ensures timezone is correct
+    tide.set_initial_time(start_datetime)
+    data.index = data.index.tz_localize(None)
 
-    return 
+    #Converts index into seconds since start of data
+    seconds = (data.index - start_datetime).total_second().to_numpy()
+    
+    #Conducts harmonic analysis
+    amp, pha = uptide.harmonic_analysis(tide, data["Sea Level"] , seconds)
+    
+    return amp, pha
+
 
 def get_longest_contiguous_data(data):
 
