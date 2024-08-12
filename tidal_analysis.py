@@ -59,7 +59,7 @@ def extract_single_year_remove_mean(year, data):
     Returns:
     	single_year_data: data for the extracted year with mean removed
 
-    """
+    
 
 	# Create strings to define the start and end of a given year
     year_start = str(year) + '0101'
@@ -71,8 +71,19 @@ def extract_single_year_remove_mean(year, data):
 	# Calculate and subtract the mean sea level from the sea level data for the year
     mean = np.mean(single_year_data['Sea Level'])
     single_year_data['Sea Level'] -= mean
-
+	"""
+	# Defines the start and end of the target year using strings
+    year_start = str(year)+"0101"
+    year_end = str(year)+"1231"
+    
+    # Locates the year to be extracted
+    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
+    
+    # Calculates the mean and subtracts it from the sea level data
+    mmm = np.mean(year_data['Sea Level'])
+    single_year_data['Sea Level'] = mmm
     return single_year_data
+
 
 
 def extract_section_remove_mean(start, end, data):
@@ -96,11 +107,9 @@ def extract_section_remove_mean(start, end, data):
 	# Identifies and extracts the specified section of data from the dataframe
     section_data = data.loc[section_start:section_end]
 
-	# Calculate mean sea level for the extracted section
-    section_mean = np.mean(section_data['Sea Level'])
-
-	# Subtract the mean from the sea level data for the section
-    section_data['Sea Level'] = section_data['Sea Level'] - section_mean
+	# Calculate and subtract the mean sea level from the sea level data for the extracted section
+    mean = np.mean(section_data['Sea Level'])
+    section_data['Sea Level'] -= mean
 
     return section_data
 
