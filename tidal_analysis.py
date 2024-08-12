@@ -20,7 +20,7 @@ def read_tidal_data(filename):
 
     """
 
-# Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
+	# Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
     data = pd.read_csv(filename, sep=r'\s+', header=None, skiprows=11)
     data = data.rename(columns = {data.columns[0] : "Index"})
     data = data.rename(columns = {data.columns[1] : "Date"})
@@ -28,13 +28,13 @@ def read_tidal_data(filename):
     data = data.rename(columns = {data.columns[3] : "Sea Level"})
     data = data.rename(columns = {data.columns[4] : "Residual"})
 
-# Combines dates and times into datetime
+	# Combines dates and times into datetime
     data['date_time'] = pd.to_datetime(data['Date'] + ' ' + data['Time'])
 
-# Assigns datetime as the index for thhe data frame
+	# Assigns datetime as the index for the data frame
     data = data.set_index('date_time')
 
-# Cleans data by replacing missing/corrupted data with NaN values - From SEPwC Git README
+	# Cleans data by replacing missing/corrupted data with NaN values
     data.replace(to_replace=".*M$",
                  value={'Sea Level': np.nan}, regex=True, inplace=True)
     data.replace(to_replace=".*N$",
@@ -42,7 +42,7 @@ def read_tidal_data(filename):
     data.replace(to_replace=".*T$",
                  value={'Sea Level': np.nan}, regex=True, inplace=True)
 
-# Converts sea level data into float
+	# Converts sea level data into float
     data['Sea Level'] = data['Sea Level'].astype(float)
 
     return data
@@ -61,19 +61,17 @@ def extract_single_year_remove_mean(year, data):
 
     """
 
-# Create strings to define the start and end of a given year
-    year_start = str(year) + "0101"
-    year_end = str(year) + "1231"
+	# Create strings to define the start and end of a given year
+    year_start = str(year) + '0101'
+    year_end = str(year) + '1231'
 
-# Find the sea level data for a given year in the dataframe
-    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
+	# Find the sea level data for a given year in the dataframe
+    single_year_data = data.loc[year_start:year_end, ['Sea Level']]  
 
-# Calculate the mean of the selected year
+	# Calculate and subtract the mean sea level from the sea level data for the year
+	#SEPWC Handbook
     single_year_mean = np.mean(single_year_data['Sea Level'])
-
-# Subtract the mean sea level from the sea level data for the year
-    single_year_data['Sea Level'] = single_year_data['Sea Level'] - \
-        single_year_mean
+    single_year_data['Sea Level'] = (single_year_data['Sea Level']) - (single_year_mean)
 
     return single_year_data
 
