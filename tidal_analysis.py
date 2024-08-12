@@ -21,7 +21,7 @@ def read_tidal_data(filename):
     """
 
 	# Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
-    data = pd.read_csv(filename, sep=r'\s+', header=None, skiprows=11)
+    data = pd.read_table(filename, sep=r'\s+', header=None, skiprows=11)
     data = data.rename(columns = {data.columns[0] : "Index"})
     data = data.rename(columns = {data.columns[1] : "Date"})
     data = data.rename(columns = {data.columns[2] : "Time"})
@@ -58,30 +58,19 @@ def extract_single_year_remove_mean(year, data):
 
     Returns:
     	single_year_data: data for the extracted year with mean removed
-
-    
-
-	# Create strings to define the start and end of a given year
-    year_start = str(year) + '0101'
-    year_end = str(year) + '1231'
-
-	# Find the sea level data for a given year in the dataframe
-    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
-    
-	# Calculate and subtract the mean sea level from the sea level data for the year
-    mean = np.mean(single_year_data['Sea Level'])
-    single_year_data['Sea Level'] -= mean
 	"""
+    
 	# Defines the start and end of the target year using strings
-    year_start = str(year)+"0101"
-    year_end = str(year)+"1231"
+    year_start = str(year) + "0101"
+    year_end = str(year) + "1231"
     
     # Locates the year to be extracted
-    single_year_data = data.loc[year_start:year_end, ['Sea Level']]
-    
+    single_year_data = data.loc[year_start:year_end, ["Sea Level"]].copy()
+   
     # Calculates the mean and subtracts it from the sea level data
-    mmm = np.mean(year_data['Sea Level'])
-    single_year_data['Sea Level'] = mmm
+    mmm = np.mean(single_year_data["Sea Level"])
+    single_year_data["Sea Level"] -= mmm
+    
     return single_year_data
 
 
@@ -96,7 +85,7 @@ def extract_section_remove_mean(start, end, data):
     	data: path to data file
 
     Returns:
-    	single_section_data:
+    	section_data: extracted data with mean removed
 
     """
 
@@ -105,17 +94,17 @@ def extract_section_remove_mean(start, end, data):
     section_end = str(end)
 
 	# Identifies and extracts the specified section of data from the dataframe
-    section_data = data.loc[section_start:section_end]
+    section_data = data.loc[section_start:section_end].copy()
 
 	# Calculate and subtract the mean sea level from the sea level data for the extracted section
-    mean = np.mean(section_data['Sea Level'])
-    section_data['Sea Level'] -= mean
+    mean = np.mean(section_data["Sea Level"])
+    section_data["Sea Level"] -= mean
 
     return section_data
 
 
 def join_data(data1, data2):
-	"""
+    """
     Joins two data files into one combined file and sorts them based on their index.
 
     Args:
@@ -126,17 +115,18 @@ def join_data(data1, data2):
     	joined_data: Sorted file containing the data from the two input files
 
     """
-# Reads in the two data files
-	data1 = pd.read_csv(data1)
-	data2 = pd.read_csv(data2)
+    
+    # Reads in the two data files
+    data1 = pd.read_csv(data1)
+    data2 = pd.read_csv(data2)
 
-# Concatenates the two data files into one single file
-	joined_data = pd.concat([data1, data2])
+    # Concatenates the two data files into one single file
+    joined_data = pd.concat([data1, data2])
 
-# Sorts the joined data by the index in ascending order
-	joined_data.sort_index(ascending=True, inplace=True)
+    # Sorts the joined data by the index in ascending order
+    joined_data.sort_index(ascending=True, inplace=True)
 
-	return joined_data
+    return joined_data
 
 
 def sea_level_rise(data):
@@ -151,18 +141,18 @@ def sea_level_rise(data):
     	p: p-value
     """
 
-# Drops NaN values from the data
+	# Drops NaN values from the data
     data = data.dropna(subset=["Sea Level"])
 
-# Converts the index into datetime
+	# Converts the index into datetime
     data.index = pd.to_datetime(data.index)
 
-# Assigns data to x and y axis for regression
-# Converts datetime into number of days since start
+	# Assigns data to x and y axis for regression
+	# Converts datetime into number of days since start
     x_data = dates.date2num(data.index)
     y_data = data["Sea Level"]
 
-# Performs linear regression
+	# Performs linear regression
     slope, intercept, r, p, se = linregress(x_data, y_data)
 
     return slope, p
@@ -201,16 +191,16 @@ def get_longest_contiguous_data(data):
         
     """
     
-#https://www.youtube.com/watch?v=7Z7x8zleA0w
+	# https://www.youtube.com/watch?v=7Z7x8zleA0w
     data = np.append(np.nan, np.append(data, np.nan))
     
-#Locate NaN values in data
+	# Locate NaN values in data
     where_null = np.where(np.isnan(data))[0]
 
-#Finds the length of stretches and where the longest is
+	# Finds the length of stretches and where the longest is
     longest_contiguous = np.diff(where_null).argmax()
     
-#Returns the position of the boundary NaN values
+	# Returns the position of the boundary NaN values
     return where_null[[longest_contiguous, longest_contiguous + 1]]
     
 
@@ -232,6 +222,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
     dirname = args.directory
     verbose = args.verbose
+    dataframe = read_tidal_data(dirname)
     
-
+    amplitude = tidal_analysis(dataframe, ["M2"], dataframe.index.min())
+    phase = tidal_analysis(dataframe, ["S2"], dataframe.index.min())
+    print("Amplitude:", amplitude)
+    print("Phase:", phase)
+    
+    slope, p = sea_level_drise(dataframe)
+    print("Sea level rise:", {slope})
+    print("P-Value:", {p})
 
