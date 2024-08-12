@@ -20,15 +20,16 @@ def read_tidal_data(filename):
 
     """
 
-# Defines new column names
-    column_names = ['Index', 'Date', 'Time', 'Sea Level', 'Residual']
-
 # Reads in file, removes unnecessary whitespace between columns, assigns new column names, skips first 11 rows
-    data = pd.read_csv(filename, sep=r'\s+', header=column_names, skiprows=11)
+    data = pd.read_csv(filename, sep=r'\s+', header=None, skiprows=11)
+    data = data.rename(columns = {data.columns[0] : "Index"})
+    data = data.rename(columns = {data.columns[1] : "Date"})
+    data = data.rename(columns = {data.columns[2] : "Time"})
+    data = data.rename(columns = {data.columns[3] : "Sea Level"})
+    data = data.rename(columns = {data.columns[4] : "Residual"})
 
 # Combines dates and times into datetime
-    date_time = data['Date'] + ' ' + data['Time']
-    data['date_time'] = pd.to_datetime(data['data_time'])
+    data['date_time'] = pd.to_datetime(data['Date'] + ' ' + data['Time'])
 
 # Assigns datetime as the index for thhe data frame
     data = data.set_index('date_time')
